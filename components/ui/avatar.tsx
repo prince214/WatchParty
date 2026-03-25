@@ -20,6 +20,7 @@ export function Avatar({ src, fallback, size = "md", className, ...props }: Avat
 
   return (
     <div
+      title={fallback}
       className={cn(
         "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/20 text-primary font-semibold",
         sizeMap[size],
