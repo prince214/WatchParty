@@ -25,6 +25,26 @@ export async function getFileMetadata(fileId: string) {
   return res.data;
 }
 
+export async function listVideoFiles(folderId?: string) {
+  const drive = getDriveClient();
+
+  let query = "mimeType contains 'video/' and trashed = false";
+  if (folderId) {
+    query += ` and '${folderId}' in parents`;
+  }
+
+  const res = await drive.files.list({
+    q: query,
+    fields: "files(id,name,mimeType,size,thumbnailLink,createdTime)",
+    orderBy: "name",
+    pageSize: 100,
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+  });
+
+  return res.data.files ?? [];
+}
+
 export async function getFileStream(fileId: string, range?: string) {
   const drive = getDriveClient();
 

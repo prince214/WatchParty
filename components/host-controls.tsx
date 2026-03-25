@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { MessageSquareOff, MessageSquare, Link2, Check } from "lucide-react";
+import { MessageSquareOff, MessageSquare, Link2, Check, Trash2 } from "lucide-react";
 
 interface HostControlsProps {
   roomId: string;
@@ -12,7 +13,10 @@ interface HostControlsProps {
 }
 
 export function HostControls({ roomId, isChatMuted, onChatMuteChange }: HostControlsProps) {
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   async function toggleMute() {
     const supabase = createClient();
@@ -29,6 +33,19 @@ export function HostControls({ roomId, isChatMuted, onChatMuteChange }: HostCont
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleDelete() {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      setTimeout(() => setConfirmDelete(false), 3000);
+      return;
+    }
+
+    setDeleting(true);
+    const supabase = createClient();
+    await supabase.from("rooms").delete().eq("id", roomId);
+    router.push("/");
   }
 
   return (
@@ -57,6 +74,17 @@ export function HostControls({ roomId, isChatMuted, onChatMuteChange }: HostCont
             <Link2 className="h-4 w-4" /> Copy Link
           </>
         )}
+      </Button>
+
+      <Button
+        variant={confirmDelete ? "destructive" : "ghost"}
+        size="sm"
+        onClick={handleDelete}
+        disabled={deleting}
+        className="gap-1.5"
+      >
+        <Trash2 className="h-4 w-4" />
+        {confirmDelete ? "Confirm Delete" : "Delete Room"}
       </Button>
     </div>
   );
