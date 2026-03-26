@@ -164,12 +164,17 @@ export function VideoPlayer({
         playsInline
       />
 
-      {/* Click-to-play overlay for guests */}
+      {/* Info overlay for guests when host hasn't started or has paused */}
       {!isHost && !playing && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-          <div className="rounded-full bg-white/10 p-5 backdrop-blur-sm">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
+          <div className="rounded-full bg-white/10 p-5 mb-4">
             <Pause className="h-10 w-10 text-white" />
           </div>
+          <p className="text-white/90 text-sm font-medium">
+            {timestamp === 0
+              ? "Waiting for the host to start the movie..."
+              : "The host has paused the movie"}
+          </p>
         </div>
       )}
 
